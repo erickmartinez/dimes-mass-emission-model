@@ -1,0 +1,268 @@
+\documentclass[12pt,twoside]{article}
+\usepackage{graphicx} % Required for inserting images
+%% The amssymb package provides various useful mathematical symbols
+\usepackage{amssymb}
+%% The amsmath package provides various useful equation environments.
+\usepackage{amsmath}
+\usepackage{physics}
+\usepackage[separate-uncertainty=true,group-minimum-digits=3, group-separator = {,}]{siunitx}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage{newtxtext,newtxmath}
+\usepackage{csquotes} % Recommended for biblatex with babel/polyglossia
+\usepackage{xcolor}
+\usepackage{soul}
+\usepackage{wasysym}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+\title{2026 - Mass loss model for pebble aggregate samples in DiMES}
+\author{Erick Martinez Loran}
+\date{August 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{The mass loss is proportional to the incident heat load}
+\begin{align}
+\frac{dm}{dt} = c q_{\parallel} \label{eq:mass-loss-q}
+\end{align}
+
+Consider the incident heat loss as
+\begin{align}
+q_{\parallel} &= \gamma n_e k_{\mathrm{B}} T_e c_s, \label{eq:plasma_heat_load}
+\end{align}
+where $\gamma$ is the transmission coefficient in the sheath, $k_{\mathrm{B}}$ is Boltzmann's constant, $c_s$ is the ion sound speed, $T_e$, and $n_e$ are the electron temperature and electron density at the sheath edge, respectively.
+
+The ion saturation current density $J_{\mathrm{sat}}$ is the maximum current that can be drawn to a material surface (such as a Langmuir probe or vacuum chamber wall) and is defined as follows:
+\begin{align}
+J_{\mathrm{sat}} \equiv e n_{\mathrm{se}} c_s \label{eq:ion-saturation}
+\end{align}
+
+Substitute $n_{\mathrm{se}} c_s = J_{\mathrm{sat}} /e$ into the sheath transmission equation Eq.~\eqref{eq:plasma_heat_load}:
+\begin{align}
+q_{\parallel} &= \frac{\gamma J_{\mathrm{sat}} k_{\mathrm{B}} T_e}{e}. \label{eq:q_para_Jsat}
+\end{align}
+
+Multiply Eq.~\eqref{eq:q_para_Jsat} by the wetted area $A_w$ and plug it into Eq.~\eqref{eq:mass-loss-q}:
+\begin{align}
+\frac{dm}{dt} = c A_w \frac{\gamma J_{\mathrm{sat}} k_{\mathrm{B}} T_e}{e}
+\end{align}
+
+We propose that $A_w(t) J_{\mathrm{sat}} (t)$ is the current measured at DiMES:
+\begin{align*}
+\frac{dm}{dt} = c \gamma k_{\mathrm{B}} I(t)  T_e(t).
+\end{align*}
+The prefactor $c \gamma k_{\mathrm{B}}$ can be lumped into a single constant $c$
+\begin{align}
+\boxed{
+\frac{dm}{dt} = c I(t) T_e(t) \label{eq:mass-loss-I}
+}
+\end{align}
+
+
+To calibrate the model, we measure the total mass change $m_{\mathrm{L}} \equiv \Delta m = m_f - m_i$ before and after exposure to the plasma heat load.
+Then,
+\begin{align}
+m_{\mathrm{L}} = c \int_0^t I(t)  T_e(t) dt = cQ. \label{eq:mass-loss-integral}
+\end{align}
+So:
+\begin{align}
+c = \frac{m_{\mathrm{L}}}{Q} \label{eq:model-proportionality-constant}
+\end{align}
+
+\section{Estimating the uncertainty in \textit{c}}
+The total uncertainty is given by:
+\begin{align}
+\delta c = \left[ \left( \frac{\delta m_{\mathrm{L}}}{m_{\mathrm{L}}} \right)^2 + \left(\frac{\delta Q}{Q}\right)^2 \right]^{1/2} \label{eq:uncertainty-c_implicit}
+\end{align}
+
+\subsection{\textit{Q} is estimated numerically}
+$Q$ is estimated using either the trapezoid or Simpson's rule.
+
+\textbf{Simpson's rule}
+\begin{align}
+Q = \frac{\Delta t}{3} \sum_{i=0}^N w_i, I_i T_{e,i}, \qquad w_i \in \{1,4,2,4,2,\ldots,4,1\}
+\label{eq:Q-simpson}
+\end{align}
+So each contribution is $q_i = \frac{\Delta t}{3}w_i I_i, T_{e,i}$:
+\begin{align*}
+Q = \sum_{i=0}^N q_i
+\end{align*}
+
+The partial derivatives of $q_i$ are
+\begin{align*}
+\frac{\partial q_i}{\partial I_i} = \frac{q_i}{I_i}, \quad \frac{\partial q_i}{\partial T_{e,i}} = \frac{q_i}{T_{e,i}}
+\end{align*}
+So
+\begin{align*}
+\delta q_i &= \left[ \left( \frac{q_i \delta I_i^2}{I_i} \right)^2 + \left( \frac{q_i \delta T_{e,i}^2}{T_{e,i}} \right)^2 \right]^{1/2} \\
+&= q_i\left[ \left( \frac{\delta I_i^2}{I_i} \right)^2 + \left( \frac{\delta T_{e,i}^2}{T_{e,i}} \right)^2 \right]^{1/2}
+\end{align*}
+
+The uncertainty in $Q$ is
+\begin{align*}
+\delta Q = \left[\sum_i \left(\frac{\partial Q}{\partial q_i}\right)^2 \delta q_i^2\right]^{1/2} = \left[\sum_i  \delta q_i^2\right]^{1/2}
+\end{align*}
+
+Then,
+\begin{align*}
+\delta Q = \left\{\sum_i q_i^2 \left[  \left( \frac{\delta I_i}{I_i}\right)^2 + \left( \frac{\delta T_{e,i}}{T_{e,i}}\right)^2\right]\right\}^{1/2}
+\end{align*}
+
+Expanding $q_i$:
+\begin{align*}
+\delta Q &=
+\left\{
+  \sum_i \left( \frac{\Delta t}{3} w_i I_i T_{e,i} \right)^2  \left( \frac{\delta I_i}{I_i}\right)^2
+  + \sum_i \left( \frac{\Delta t}{3} w_i I_i T_{e,i} \right)^2 \left( \frac{\delta T_{e,i}}{T_{e,i}}\right)^2
+\right\}^{1/2}
+\end{align*}
+
+Considering the systematic uncertainty on the current: $\delta I_i / I_i \equiv \epsilon_I$ (from considering a $\epsilon_I = $ 5\% tolerance resistor and $I = V/R \Rightarrow \delta I = I \delta R / R = \epsilon_I I$ ), and canceling terms:
+\begin{align*}
+\delta Q &=
+\left\{
+  \sum_i \left( \frac{\Delta t}{3} w_i T_{e,i} I_i \epsilon_I \right)^2  
+  + \sum_i \left( \frac{\Delta t}{3} w_i I_i  \delta T_{e,i} \right)^2
+\right\}^{1/2}
+\end{align*}
+
+The first term is equal to $\epsilon_i Q$:
+\begin{align}
+\boxed{
+\delta Q =
+\left\{
+  \left(\epsilon_I Q\right)^2
+  + \sum_i \left( \frac{\Delta t}{3} w_i I_i  \delta T_{e,i} \right)^2 \label{eq:uncertainty-Q}
+\right\}^{1/2}
+}
+\end{align}
+
+\section{Expanding the uncertainty in the rate of mass loss}
+The rate of mass loss is given by Eq.~\eqref{eq:mass-loss-I}:
+\begin{align}
+r(t) = \frac{dm}{dt} = c I(t) T_e(t). \label{eq:mass-loss-rate}
+\end{align}
+The constant $c$, the current $I(t)$, and the electron temperature $T_e(t)$ have associated uncertainties $\delta c$, $\delta I = \epsilon_I $, and $\delta T_e$.
+
+Writing Eq.~\eqref{eq:mass-loss-rate} explicitly
+\begin{align*}
+r(t) = \frac{m_{\mathrm{L}}}{\int_0^{\tau}I(t)T_e(t) dt} I(t) T_e(t). 
+\end{align*}
+Take the logarithm
+\begin{align}
+\ln r(t) &= \ln \left(m_{\mathrm{L}}\right) + \ln \left[ I(t) \right] + \ln \left[T_e(t)\right] - \ln \left( \int_0^{\tau}I(t)T_e(t) dt\right) \notag\\
+&= \ln m_{\mathrm{L}} + \ln  I + \ln T_e - \ln Q
+\end{align}
+
+Take the partial derivative
+\begin{align}
+\frac{\partial \ln r}{\partial m_{\mathrm{L}}} &= \frac{1}{r} \frac{\partial r}{\partial m_{\mathrm{L}}} = \frac{1}{m_{\mathrm{L}}}
+\end{align}
+
+Varying each error source, \textbf{one at a time}:
+
+\subsection{ Variation 1: $\delta m_{\mathrm{L}}$ (independent)}
+\begin{align}
+\left(\frac{\delta r}{r}\right)_{m_{\mathrm{L}}} = \frac{1}{r}\left(\frac{\partial r}{\partial m_{\mathrm{L}}}\right)\delta m_{\mathrm{L}} = \frac{\delta m_{\mathrm{L}}}{m_{\mathrm{L}}}.\tag{8}
+\end{align}
+
+\subsection{Variation 2: $\delta R/R$ (systematic, affects all $I_i$ and $I(t)$}
+Every $I_i$ has propagates the uncertainty as $I_i \to I_i(1+\epsilon)$ and $I(t)\to I(t)(1+\epsilon)$. 
+
+We are assuming that the error is systematic: \textbf{$R$ has a fractional error $\epsilon = \delta R /R$}.
+
+Since $I = V/R$, a resistor that is \textbf{larger than assumed} means the \textbf{current is smaller than assumed}:
+\begin{align*}
+I_{\mathrm{true}} = \frac{V}{R_{\mathrm{true}}} = \frac{V}{R(1+\epsilon)}\approx I(1-\epsilon)
+\end{align*}
+
+So strictly speaking $\delta I / I = -\epsilon$. However, for \textbf{uncertainty propagation, we only care about the magnitude} of the effect, not the sign. Writing $I \to I (1+\epsilon)$, with $\epsilon = \pm \delta R/R$ is just a convenient way to track how a fractional shift propagates through the formula.
+
+Then, $Q \to Q(1+\epsilon)$:
+\begin{align*}
+Q = \int_0^{\tau} I(t) T_e(t) dt \to \int_0^{\tau} I(t) (1 + \epsilon) T_e(t) dt
+= (1 + \epsilon)\int_0^{\tau} I(t)  T_e(t) dt = Q (1 + \epsilon).
+\end{align*}
+
+\textbf{This causes cancelation in $r$}:
+Substitute both shifts in $r$:
+\begin{align*}
+r &= c I(t) T_e(t) = \frac{m_{\mathrm{L}}}{Q} I(t)T_e(t) \\
+r \to \frac{m_{\mathrm{L}}}{Q(1+\epsilon)} I(t)(1+\epsilon)T_e(t)
+&= \frac{m_{\mathrm{L}}}{Q} I(t)T_e(t) \frac{(1+\epsilon)}{(1+\epsilon)} = r
+\end{align*}
+
+The $(1+\epsilon)$ factors cancel \textbf{exactly}, so $r$ is completely insensitive to $\epsilon$
+
+\subsection{Variation 3: $\delta T_{e}$}
+Assuming Simpson's rule, $Q = \frac{\Delta t}{3}\sum_{i}w_iI_iT_{e,i}$. Then,
+\begin{align}
+\ln r_k = \ln m_{\mathrm{L}} + \ln I_k + ln T_{e,k} - \ln \left(\frac{\Delta t}{3}\sum_{j}w_jI_jT_{e,j} \right)
+\end{align}
+
+$T_e$ appears \textbf{twice}:
+\begin{itemize}
+    \item Once \textbf{explicitly} in $+\ln T_{e,l}$
+    \item Once \textbf{implicitly} inside $-\ln Q$, at every time step $j$, including $j=k$
+\end{itemize}
+
+\textbf{Case $j \neq k$: $T_{e,j}$ appears only inside $\ln Q$}
+\begin{align}
+\frac{\partial \ln r_k}{\partial T_{e,j}} = -\frac{\partial \ln Q}{\partial T_{e,j}} = -\frac{1}{Q}\frac{\partial Q}{\partial T_{e,j}} = - \frac{w_j I_j \frac{\Delta t}{3}}{Q} \tag{9}
+\end{align}
+
+\textbf{Case $j = k$: $T_{e,j}$ appears in both terms $\ln T_{e,k}$, and $-\ln Q$ simultaneously}
+\begin{align}
+\frac{\partial \ln r_k}{\partial T_{e,k}} &= \underbrace{\frac{\partial \ln T_{e,k}}{\partial T_{e,k}}}_{\text{explicit term}} -\underbrace{\frac{\partial \ln Q}{\partial T_{e,k}}}_{\text{implicit term}} \notag \\
+&= \frac{1}{T_{e,k}} - \frac{w_j I_j \frac{\Delta t}{3}}{Q}
+\end{align}
+
+Multiplying through by $\delta T_{e,k}$ to express as a relative uncertainty:
+\begin{align}
+\frac{\partial \ln r_k}{\partial T_{e,k}} \delta T_{e,k} = \left[ 1 - \frac{w_k I_k T_{e,k} \frac{\Delta t}{3}}{Q}\right]\frac{\delta T_{e,k}}{T_{e,k}}
+\end{align}
+
+Define
+\begin{align}
+\boxed{
+\alpha_k \equiv \frac{w_k I_k T_{e,k} \frac{\Delta t}{3}}{Q} \label{eq:alpha_k}
+}
+\end{align}
+
+\subsection{Full $T_e$ uncertainty}
+We can unify both cases cleanly
+\begin{align}
+\left(\frac{\delta r_k}{r_k}\right)_{T_e}^2 &= \sum_{\color{red}{j}}\left( \frac{\partial \ln r_k}{\partial T_{e,j}} \delta T_{e,j}\right)^2
+=
+\sum_{\color{red}{j}}\left( \frac{\partial }{\partial T_{e,j}} \left[ \ln T_{e,k} - \ln Q \right]\delta T_{e,j}\right)^2 
+\end{align}
+where
+\begin{align}
+\frac{\partial \ln r_k}{\partial T_{e,j}} =
+\begin{cases}
+\dfrac{1-\alpha_k}{T_{e,k}}, & j=k\\[1em]
+-\dfrac{w_j I_j \frac{\Delta t}{3}}{Q}, & j\neq k
+\end{cases}
+\end{align}
+
+So the sum over \textbf{all} $j$ naturally splits into the two cases:
+\begin{align}
+\boxed{
+\left(\frac{\delta r_k}{r_k}\right)^2 = (1 - \alpha_k)^2\left(\frac{\delta T_{e,k}}{T_{e,k}}\right)^2 + \sum_{j\neq k}\left(\frac{w_jI_j\frac{\Delta t}{3}}{Q}\right)^2  \delta T_{e,j}
+}
+\end{align}
+
+\end{document}
