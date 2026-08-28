@@ -490,7 +490,7 @@ delta_m_over_m = np.sqrt(frac_dm + frac_Te)
 \section{Change of $A_w$ with incident heat load}
 We assume that the wetted area $A_w$ decreases with exposure to heat load. This should be proportional to the mass loss:
 \begin{align*}
-    A_{\mathrm{w}} \equiv Dh(t)/2
+    A_{\mathrm{w}} \equiv Dh(t)
 \end{align*}
 where $D$ is the diameter of the rod and $h(t)$ is the height of the rod exposed to the plasma at time $t_k$. $h(t)$ decreases with mass loss: 
 \begin{align*}
@@ -505,8 +505,8 @@ The volume of the rod lost during exposure is $V(t) = \pi D^2 h(t) / 4$. Assumin
 
 And the wetted area is given by
 \begin{align}
-    A_w(t) = \frac{D}{2}\left( \frac{4}{\rho_{\mathrm{rod}}\pi D^2}\right) m_{\mathrm{lost}}(t) 
-    = \frac{2}{\rho_{\mathrm{rod}}\pi D} m_{\mathrm{lost}} (t) 
+    A_w(t) = D\left( \frac{4}{\rho_{\mathrm{rod}}\pi D^2}\right) m_{\mathrm{lost}}(t) 
+    = \frac{4}{\rho_{\mathrm{rod}}\pi D} m_{\mathrm{lost}} (t) 
     \label{eq:A_w_t}
 \end{align}
 
@@ -529,33 +529,35 @@ The surface recession rate for the wetted surface
 \end{align}
 Plugging in Eq.~\eqref{eq:A_w_t}:
 \begin{align*}
-    \nu(t) = \frac{1}{\rho_{\mathrm{rod}}} \left( \frac{\rho_{\mathrm{rod} \pi D}}{2 m_{\mathrm{lost}}(t)}\right) r(t)
-    = \frac{\pi D}{2} \frac{r(t)}{m_{\mathrm{lost}}(t)}
+    \nu(t) = \frac{1}{\rho_{\mathrm{rod}}} \left( \frac{\rho_{\mathrm{rod} \pi D}}{4 m_{\mathrm{lost}}(t)}\right) r(t)
+    = \frac{\pi D}{4} \frac{r(t)}{m_{\mathrm{lost}}(t)}
 \end{align*}
 Which can be written \textbf{explicitly} in terms of $I(t)$, and $T_e(t)$ as
 \begin{align}
-    \nu(t) = \frac{\pi D}{2} \frac{1}{c \int_0^t I(t')T_e(t') dt} c I(t) T_e(t) 
+    \nu(t) = \frac{\pi D}{4} \frac{1}{c \int_0^t I(t')T_e(t') dt} c I(t) T_e(t) 
     \label{eq:nu_explicitly}
 \end{align}
 
 
 Expressing it in numeric form:
 \begin{align}
-    \nu_k = \frac{\pi D}{2} \frac{I_k T_{e,k}}{S_k} 
+    \nu_k = \frac{\pi D}{4} \frac{I_k T_{e,k}}{Q_k} 
     \label{eq:surface_recession_Aw}
 \end{align}
 
 \subsection{Uncertainty in surface recession rate}
 Start with the expression in Eq.~\eqref{eq:surface_recession_Aw}:
 \begin{align*}
-    \nu_k = \frac{\pi D}{2} \frac{I_k T_{e,k}}{S_k}.
+    \nu_k = \frac{\pi D}{4} \frac{I_k T_{e,k}}{Q_k}.
 \end{align*}
 
 
 Define
 \begin{align}
-    X_i \equiv I_i T_{e,i}, \quad S_k \equiv \sum_{i=0}^k w_i X_i
+    X_i \equiv I_i T_{e,i}, \quad Q_k \equiv \sum_{i=0}^k w_i X_i, 
 \end{align}
+where we have lumped $\Delta t/3$ in the quadrature weights $w_i$.
+
 The propagation of the uncertainty of $f(u_1,\ldots,u_n)$ is given by
 \begin{align*}
     \sigma_f^2 = \sum_m \left(\frac{\partial f}{\partial u_m}\right)^2\sigma^2_m
@@ -565,7 +567,7 @@ Assume $\delta V = 0$, so that the error in $I=V/R$ is systematic from $\delta R
 
 Here is why, if $Ij = V_j/R_j$ with the \emph{same} $R$ is used for every sample, then substitute it directly into $\nu_k$ before ever differentiating:
 \begin{align*}
-    \nu_k = \frac{\pi D}{2}\frac{I_k T_{e,k}}{S_k} = \frac{\pi D}{2}\frac{(V_k/R)T_{e,k}}{\sum_{i}^kw_i(V_i/R)T_{e,i}} =  \frac{\pi D}{2} \frac{V_k T_e{,k}}{\sum_{i}^kw_iV_i T_{e,i}}
+    \nu_k = \frac{\pi D}{4}\frac{I_k T_{e,k}}{Q_k} = \frac{\pi D}{4}\frac{(V_k/R)T_{e,k}}{\sum_{i}^kw_i(V_i/R)T_{e,i}} =  \frac{\pi D}{4} \frac{V_k T_e{,k}}{\sum_{i}^kw_iV_i T_{e,i}}
 \end{align*}
 $R$ factors out of every term in the sum $S_k$ and out of the numerator identically, so it cancels completely --algebraically, before taking any derivative.
 
@@ -580,20 +582,20 @@ trivial.
 \subsubsection{The $X_j$ partial}
 Rather than differentiating directly with respect to $T_{e,j}$, it is cleaner to first get $\partial \nu_k/\partial X_j$, then use the chain rule through $X_j = I_j T_{e,j}$.
 
-Write $\nu_k = \frac{\pi D}{2} X_k S_k^{-1}$ and use the product rule
+Write $\nu_k = \frac{\pi D}{2} X_k Q_k^{-1}$ and use the product rule
 \begin{align*}
-    \frac{\partial \nu_k}{\partial X_j} &= \frac{\pi D}{2}\left[ \frac{\partial X_k}{\partial X_j}\cdot \frac{1}{S_k} + X_k\cdot\frac{\partial \left(S_k\right)^{-1}}{\partial X_j}\right]
+    \frac{\partial \nu_k}{\partial X_j} &= \frac{\pi D}{4}\left[ \frac{\partial X_k}{\partial X_j}\cdot \frac{1}{Q_k} + X_k\cdot\frac{\partial \left(Q_k\right)^{-1}}{\partial X_j}\right]
 \end{align*}
 
 Two pieces to work out:
 \begin{itemize}
     \item $\dfrac{\partial X_k}{\partial X_j} = \delta_{jk}$ (the Kronecker delta -- $X_k$ only depends on itself, so this is 1 if $j=k$, 0 otherwise). \textbf{This is the term that captures the numerator/denominator correlation} -- $X_k$ appears explicitly in the numerator , so differentiating the numerator with respect to $X_j$ only ``sees'' it when $j=k$.
-    \item $\dfrac{\partial S_k}{\partial X_j} = w_j$ for $j\leq k$ (since $S_k=\sum_{i=0}^k w_i X_i$ is linear in each $X_i$), so by the chain rule, $\dfrac{\partial \left(S_k\right)^{-1}}{\partial X_j} = - S_k^{-2}\dfrac{\partial S_k}{\partial X_j} = -\dfrac{w_j}{S_k^2}$
+    \item $\dfrac{\partial Q_k}{\partial X_j} = w_j$ for $j\leq k$ (since $Q_k=\sum_{i=0}^k w_i X_i$ is linear in each $X_i$), so by the chain rule, $\dfrac{\partial \left(S_k\right)^{-1}}{\partial X_j} = - Q_k^{-2}\dfrac{\partial Q_k}{\partial X_j} = -\dfrac{w_j}{Q_k^2}$
 \end{itemize}
 
 Putting these together:
 \begin{align}
-    \frac{\partial \nu_k}{\partial X_j} &= \frac{\pi D}{2}\left[ \frac{\delta_{jk}}{S_k} - \frac{w_j X_k}{S_k^2} \right], \quad j\leq k
+    \frac{\partial \nu_k}{\partial X_j} &= \frac{\pi D}{4}\left[ \frac{\delta_{jk}}{Q_k} - \frac{w_j X_k}{Q_k^2} \right], \quad j\leq k
     \label{eq:partial-vk_Xj}
 \end{align}
 
@@ -604,7 +606,7 @@ Since $X_j = I_jT_{e,j}$, with no error through $I_j$ (systematic error $\delta 
 \end{align*}
 so in variance form
 \begin{align*}
-    \frac{\partial v_k}{\partial T_{e,j}} \delta T_{e,j} = \frac{\pi D}{2}\left[ \frac{\delta_{jk}}{S_k} - \frac{w_j X_k}{S_k^2} \right] I_j \delta T_{e,j}, \quad j\leq k
+    \frac{\partial v_k}{\partial T_{e,j}} \delta T_{e,j} = \frac{\pi D}{4}\left[ \frac{\delta_{jk}}{Q_k} - \frac{w_j X_k}{Q_k^2} \right] I_j \delta T_{e,j}, \quad j\leq k
 \end{align*}
 
 It is cleanest to just define $\delta X_j \equiv I_j \delta T_{e,j}$ and treat $\left(\frac{\partial v_k}{\partial X_j} \right)^2 \delta X_j^2$ as the contribution.
@@ -613,101 +615,176 @@ It is cleanest to just define $\delta X_j \equiv I_j \delta T_{e,j}$ and treat $
 Sum the independent contributions from $D$ and each $T_{e,j}, j=0,1,\ldots,k$:
 \begin{align}
     \boxed{
-        \delta v_k = \left\{\left( \frac{v_k}{D}\right)^2 \delta D^2 + \sum_{j=0}^k\left[ \frac{\pi D}{2} \left( \frac{\delta_{jk}}{S_k} - \frac{w_j X_k}{S_k^2}\right)\right]^2\delta X_j^2\right\}^{1/2}
+        \delta v_k = \left\{\left( \frac{v_k}{D}\right)^2 \delta D^2 + \sum_{j=0}^k\left[ \frac{\pi D}{4} \left( \frac{\delta_{jk}}{Q_k} - \frac{w_j X_k}{Q_k^2}\right)\right]^2\delta X_j^2\right\}^{1/2}
     }
 \end{align}
 
 This can be implemented in Python as
 \begin{lstlisting}[caption={Example implementation of the recession rate calculation in Python}]
 """
-Uncertainty propagation for the DiMES surface recession rate
+Uncertainty propagation for the DiMES surface recession rate.
 
-    nu_k = (pi * D / 2) * X_k / S_k,  X_i = I_i * Te_i,  S_k = sum_{i=0}^k w_i * X_i
-    I_i  = V_i / R   (same R for every sample; I treated as exact -- see below)
+    nu_k = (pi * D / 2) * X_k / Q_k,   X_i = I_i * Te_i
+    Q_k  = numerical integral of X over [t_0, t_k], via 'trapezoid' or
+           'simpson' composite quadrature -- NON-UNIFORM time grid t.
+    I_i treated as exact (dV = 0); dR/R contributes nothing (see prior
+    derivation) and is not modeled.
 
-Notes
------
-- rho and c cancel analytically and do not appear as inputs.
-- R cancels identically out of nu_k (homogeneous degree 0 in the I_i's), so a
-  systematic calibration error dR/R contributes nothing and is not modeled.
-- Voltage/current uncertainty is taken as zero (machine epsilon), so I_i is
-  treated as exact. The only per-sample randomness is in Te_i.
-- dX_i therefore reduces to X_i * (dTe_i / Te_i) = I_i * dTe_i.
+Quadrature coefficients dQ_k/dX_j  (t is now an array, not a scalar dt)
+-------------------------------------------------------------------------
+trapezoid:  dQ_k/dX_0 = (t_1-t_0)/2
+            dQ_k/dX_j = (t_{j+1}-t_{j-1})/2   (0<j<k)
+            dQ_k/dX_k = (t_k-t_{k-1})/2
+
+simpson:    composite Simpson over PANELS of 3 consecutive points, using
+            the unequal-interval formula (reduces to the standard
+            h/3, 4h/3, h/3 weights when the panel's two sub-intervals are
+            equal). For odd k, a plain trapezoidal correction (using the
+            true local width t_k - t_{k-1}) is added for the leftover
+            interval, exactly as in the uniform-grid version.
 """
 
 import numpy as np
 
 
-def propagate_analytic(D, dD, I, Te, dTe, w):
+def quad_coeffs(k, t, method="trapezoid"):
+    """dQ_k/dX_j for j = 0..k, for the chosen quadrature method.
+    t : array_like of sample times (length >= k+1), need not be uniform."""
+    t = np.asarray(t, dtype=float)
+    c = np.zeros(k + 1)
+    if k == 0:
+        return c
+
+    if method == "trapezoid":
+        c[0] = (t[1] - t[0]) / 2.0
+        c[1:k] = (t[2:k + 1] - t[0:k - 1]) / 2.0
+        c[k] = (t[k] - t[k - 1]) / 2.0
+        return c
+
+    if method == "simpson":
+        m = k if k % 2 == 0 else k - 1  # largest even index <= k
+        for start in range(0, m, 2):
+            h0 = t[start + 1] - t[start]
+            h1 = t[start + 2] - t[start + 1]
+            w0 = (h0 + h1) / 6.0 * (2.0 - h1 / h0)
+            w1 = (h0 + h1) / 6.0 * (h0 + h1) ** 2 / (h0 * h1)
+            w2 = (h0 + h1) / 6.0 * (2.0 - h0 / h1)
+            c[start] += w0
+            c[start + 1] += w1
+            c[start + 2] += w2
+        if k % 2 == 1:  # trailing trapezoid correction, true local width
+            half = (t[k] - t[k - 1]) / 2.0
+            c[k - 1] += half
+            c[k] += half
+        return c
+
+    raise ValueError(f"unknown method: {method}")
+
+
+def cumulative_integral(X, t, method="trapezoid"):
+    """Q_k for k = 0..N-1 (Q_0 = 0)."""
+    N = len(X)
+    Q = np.zeros(N)
+    for k in range(1, N):
+        c = quad_coeffs(k, t, method)
+        Q[k] = np.dot(c, X[: k + 1])
+    return Q
+
+
+def propagate_analytic(D, dD, I, Te, dTe, t, method="trapezoid"):
     """
     Parameters
     ----------
     D, dD : float
-        Rod diameter and its 1-sigma uncertainty.
-    I : array_like, shape (N,)
-        Current samples (I = V/R), treated as exact (dV = 0).
+    I : array_like, shape (N,)      -- treated as exact (dV = 0)
     Te, dTe : array_like, shape (N,)
-        Electron temperature samples and their 1-sigma uncertainties.
-    w : array_like, shape (N,)
-        Quadrature weights (e.g. trapezoidal dt's). Assumed exact.
+    t : array_like, shape (N,)      -- sample times, non-uniform OK
+    method : 'trapezoid' or 'simpson'
 
     Returns
     -------
-    nu, dnu : ndarray, shape (N,)
+    nu, dnu : ndarray, shape (N,)   (index 0 is undefined -- no interval yet)
     """
-    I, Te, dTe, w = (np.asarray(a, dtype=float) for a in (I, Te, dTe, w))
+    I, Te, dTe, t = (np.asarray(a, dtype=float) for a in (I, Te, dTe, t))
     N = len(I)
 
     X = I * Te
-    dX = I * dTe  # = X * (dTe/Te), since dI/I = 0
+    dX = I * dTe
+    Q = cumulative_integral(X, t, method)
 
-    S = np.cumsum(w * X)
-    nu = (np.pi * D / 2.0) * X / S
+    nu = np.full(N, np.nan)
+    dnu = np.full(N, np.nan)
+    for k in range(1, N):
+        Qk = Q[k]
+        nu[k] = (np.pi * D / 4.0) * X[k] / Qk
 
-    dnu = np.empty(N)
-    for k in range(N):
-        Sk = S[k]
+        c = quad_coeffs(k, t, method)          # dQ_k/dX_j, j=0..k
         j = np.arange(k + 1)
         kronecker = (j == k).astype(float)
-        dnu_dXj = (np.pi * D / 2.0) * (kronecker / Sk - w[j] * X[k] / Sk ** 2)
-        var_X = np.sum((dnu_dXj * dX[j]) ** 2)
+        dnu_dXj = (np.pi * D / 4.0) * (kronecker / Qk - c * X[k] / Qk ** 2)
+        var_X = np.sum((dnu_dXj * dX[: k + 1]) ** 2)
         var_D = (nu[k] / D * dD) ** 2
         dnu[k] = np.sqrt(var_X + var_D)
 
     return nu, dnu
 
 
-def propagate_montecarlo(D, dD, I, Te, dTe, w, n_draws=20000, seed=0):
-    """Monte Carlo cross-check (I fixed/exact, only D and Te resampled)."""
+def propagate_montecarlo(D, dD, I, Te, dTe, t, method="trapezoid",
+                          n_draws=20000, seed=0):
     rng = np.random.default_rng(seed)
-    I, Te, dTe, w = (np.asarray(a, dtype=float) for a in (I, Te, dTe, w))
+    I, Te, dTe, t = (np.asarray(a, dtype=float) for a in (I, Te, dTe, t))
     N = len(I)
 
     D_s = rng.normal(D, dD, size=n_draws)
     Te_s = rng.normal(Te, dTe, size=(n_draws, N))
-
     X_s = I[None, :] * Te_s
-    S_s = np.cumsum(w[None, :] * X_s, axis=1)
-    nu_s = (np.pi * D_s[:, None] / 2.0) * X_s / S_s
 
-    return nu_s.mean(axis=0), nu_s.std(axis=0)
+    Q_s = np.zeros((n_draws, N))
+    for k in range(1, N):
+        c = quad_coeffs(k, t, method)
+        Q_s[:, k] = X_s[:, : k + 1] @ c
+
+    nu_s = np.full((n_draws, N), np.nan)
+    nu_s[:, 1:] = (np.pi * D_s[:, None] / 2.0) * X_s[:, 1:] / Q_s[:, 1:]
+
+    return np.nanmean(nu_s, axis=0), np.nanstd(nu_s, axis=0)
 
 
 if __name__ == "__main__":
-    N = 50
-    t = np.linspace(0, 1, N)
-    I = 5.0 + 3.0 * np.sin(np.pi * t)   # placeholder current trace (exact)
+    N = 51
+    rng = np.random.default_rng(1)
+    # non-uniform grid: irregular but increasing spacings
+    steps = 0.5 + rng.random(N - 1)
+    t = np.concatenate([[0.0], np.cumsum(steps)])
+    t /= t[-1]  # normalize to [0,1]
+
+    I = 5.0 + 3.0 * np.sin(np.pi * t)
     Te = 20.0 + 10.0 * t
     dTe = 0.10 * Te
-    w = np.gradient(t)
     D, dD = 0.6, 0.02
 
-    nu, dnu = propagate_analytic(D, dD, I, Te, dTe, w)
-    nu_mc, dnu_mc = propagate_montecarlo(D, dD, I, Te, dTe, w)
+    for method in ("trapezoid", "simpson"):
+        print(f"\n=== {method} (non-uniform grid) ===")
 
-    print(f"{'k':>3} {'nu':>10} {'dnu (analytic)':>16} {'dnu (MC)':>10}")
-    for k in (0, N // 4, N // 2, 3 * N // 4, N - 1):
-        print(f"{k:3d} {nu[k]:10.4f} {dnu[k]:16.4f} {dnu_mc[k]:10.4f}")
+        X = I * Te
+        k_test = 21  # odd, exercises the boundary-correction branch
+        eps = 1e-6
+        Q0 = cumulative_integral(X, t, method)
+        analytic_c = quad_coeffs(k_test, t, method)
+        fd_c = np.zeros(k_test + 1)
+        for j in range(k_test + 1):
+            Xp = X.copy(); Xp[j] += eps
+            Qp = cumulative_integral(Xp, t, method)
+            fd_c[j] = (Qp[k_test] - Q0[k_test]) / eps
+        print("max |analytic dQ_k/dX_j - finite-diff| =",
+              np.max(np.abs(analytic_c - fd_c)))
+
+        nu, dnu = propagate_analytic(D, dD, I, Te, dTe, t, method)
+        nu_mc, dnu_mc = propagate_montecarlo(D, dD, I, Te, dTe, t, method)
+
+        print(f"{'k':>3} {'nu':>10} {'dnu (analytic)':>16} {'dnu (MC)':>10}")
+        for k in (1, N // 4, N // 2, 3 * N // 4, N - 1):
+            print(f"{k:3d} {nu[k]:10.4f} {dnu[k]:16.4f} {dnu_mc[k]:10.4f}")
 \end{lstlisting}
     
 \end{document}
